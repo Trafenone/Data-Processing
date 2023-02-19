@@ -14,7 +14,7 @@ namespace Service.Models
             _locker = new object();
         }
 
-        public void Save(OutputTransaction output)
+        public void Save(List<Transaction> output)
         {
             lock (_locker)
             {
