@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using Service.Models;
+using Service.Models.Readers;
+using System.Collections.Concurrent;
 
 namespace Service
 {
@@ -6,6 +8,7 @@ namespace Service
     {
         private readonly ConcurrentQueue<string> _queue;
         private readonly FileSystemWatcher _watcher;
+        private readonly SaveJson _saveService;
         private readonly FileData _fileData;
         private bool _enabled = true;
 
@@ -15,6 +18,7 @@ namespace Service
             _fileData = fileData;
             _queue = new ConcurrentQueue<string>();
             _watcher = new FileSystemWatcher(_fileData.PathA);
+            _saveService = new SaveJson(_fileData);
             _watcher.Created += Watcher_Created;
         }
 
@@ -27,7 +31,8 @@ namespace Service
                 {
                     _queue.TryDequeue(out _);
                     var reader = new FileProcessFactory().GetFileReader(new FileInfo(item));
-                    var a = await reader.ReadFileAsync();
+                    var inputData = await reader.ReadFileAsync();
+                    await _saveService.SaveAsync(OutputTransaction.Transform(inputData));
                 });
             }
         }
