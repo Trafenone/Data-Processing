@@ -1,10 +1,8 @@
 ﻿namespace Service.Models
 {
-    public class OutputTransaction
+    public static class OutputTransaction
     {
-        public Transaction[] Transactions { get; set; }
-
-        public static OutputTransaction Transform(List<InputTransaction> transactions)
+        public static List<Transaction> Transform(List<InputTransaction> transactions)
         {
             List<Transaction> result = new List<Transaction>();
             List<Service> listServices = new List<Service>();
@@ -44,7 +42,7 @@
                 result.Add(transaction);
             }
 
-            return new OutputTransaction() { Transactions = result.ToArray() };
+            return result;
         }
     }
 

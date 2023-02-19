@@ -32,7 +32,7 @@ namespace Service
                     _queue.TryDequeue(out _);
                     var reader = new FileProcessFactory().GetFileReader(new FileInfo(item));
                     var inputData = await reader.ReadFileAsync();
-                    await _saveService.Save(OutputTransaction.Transform(inputData));
+                    _saveService.Save(OutputTransaction.Transform(inputData));
                 });
             }
         }
