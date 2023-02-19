@@ -12,6 +12,7 @@
         public async Task<List<InputTransaction>> ReadFileAsync()
         {
             List<InputTransaction> result = new List<InputTransaction>();
+
             int invalidLines = 0;
             int currentLine = 0;
 

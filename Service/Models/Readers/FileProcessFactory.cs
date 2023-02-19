@@ -2,10 +2,10 @@
 {
     public class FileProcessFactory
     {
-        public IFileReader GetFileReader(FileInfo file)
+        public IFileReader? GetFileReader(FileInfo file)
         {
             if (file == null)
-                throw new ArgumentNullException("File is null");
+                throw new ArgumentNullException(nameof(file));
 
             switch (file.Extension.ToLower())
             {
@@ -14,7 +14,7 @@
                 case ".csv":
                     return new CsvFileReader(file.FullName);
                 default:
-                    throw new Exception();
+                    return null; 
             }
         }
     }
