@@ -1,12 +1,12 @@
-﻿using System.Text.Json;
-using System.Text;
+﻿using System.Text;
+using System.Text.Json;
 
 namespace Service.Models
 {
     public class SaveJson
     {
         private readonly FileData _fileData;
-        private object _locker;
+        private readonly object _locker;
 
         public SaveJson(FileData fileData)
         {
@@ -14,7 +14,7 @@ namespace Service.Models
             _locker = new object();
         }
 
-        public async Task SaveAsync(OutputTransaction output)
+        public void Save(OutputTransaction output)
         {
             lock (_locker)
             {
@@ -35,7 +35,7 @@ namespace Service.Models
 
                     byte[] input = Encoding.Default.GetBytes(json);
 
-                    fs.WriteAsync(input);
+                    fs.Write(input);
                 }
             }
         }
