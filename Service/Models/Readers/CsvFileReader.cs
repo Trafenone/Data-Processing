@@ -9,9 +9,45 @@
             _filePath = filePath;
         }
 
-        public Task<List<InputTransaction>> ReadFileAsync()
+        public async Task<List<InputTransaction>> ReadFileAsync()
         {
-            throw new NotImplementedException();
+            List<InputTransaction> result = new List<InputTransaction>();
+
+            int invalidLines = 0;
+            int currentLine = 0;
+
+            if (File.Exists(_filePath))
+            {
+                using (StreamReader sr = new StreamReader(_filePath))
+                {
+                    string? line;
+
+                    Console.WriteLine($"Читаю -> {_filePath}");
+
+                    while ((line = await sr.ReadLineAsync()) != null)
+                    {
+                        if (line.Contains("first"))
+                            continue;
+
+                        currentLine++;
+
+                        var transaction = InputTransaction.GetTransaction(line);
+
+                        if (transaction != null)
+                        {
+                            result.Add(transaction);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Помилка у рядку {currentLine}");
+                            invalidLines++;
+                        }
+                    }
+                    Console.WriteLine($"Закінчив читати -> {_filePath}");
+                }
+            }
+
+            return result;
         }
     }
 }
