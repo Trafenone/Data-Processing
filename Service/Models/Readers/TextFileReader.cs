@@ -3,13 +3,15 @@
     public class TextFileReader : IFileReader
     {
         private readonly string _filePath;
+        private readonly ILogger _logger;
 
         public TextFileReader(string filePath)
         {
             _filePath = filePath;
+            _logger = Core.GetLogger("TextFileReader");
         }
 
-        public async Task<List<InputTransaction>> ReadFileAsync()
+        public async Task<ReadingResult> ReadFileAsync()
         {
             List<InputTransaction> result = new List<InputTransaction>();
 
@@ -22,7 +24,7 @@
                 {
                     string? line;
 
-                    Console.WriteLine($"Читаю -> {_filePath}");
+                    _logger.LogInformation($"The Service reading: {_filePath}");
 
                     while ((line = await sr.ReadLineAsync()) != null)
                     {
@@ -30,20 +32,22 @@
                         var transaction = InputTransaction.GetTransaction(line);
 
                         if (transaction != null)
-                        {
                             result.Add(transaction);
-                        }
                         else
-                        {
-                            Console.WriteLine($"Помилка у рядку {currentLine}");
                             invalidLines++;
-                        }
                     }
-                    Console.WriteLine($"Закінчив читати -> {_filePath}");
+
+                    _logger.LogInformation($"The service stopped reading: {_filePath}");
                 }
             }
 
-            return result;
+            return new ReadingResult
+            {
+                Transactions = result,
+                InvalidLines = invalidLines,
+                Lines = currentLine,
+                NameFile = _filePath
+            };
         }
     }
 }

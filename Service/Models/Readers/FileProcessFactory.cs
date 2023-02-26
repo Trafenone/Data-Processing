@@ -7,15 +7,12 @@
             if (file == null)
                 throw new ArgumentNullException(nameof(file));
 
-            switch (file.Extension.ToLower())
+            return file.Extension.ToLower() switch
             {
-                case ".txt":
-                    return new TextFileReader(file.FullName);
-                case ".csv":
-                    return new CsvFileReader(file.FullName);
-                default:
-                    return null; 
-            }
+                ".txt" => new TextFileReader(file.FullName),
+                ".csv" => new CsvFileReader(file.FullName),
+                _ => null,
+            };
         }
     }
 }

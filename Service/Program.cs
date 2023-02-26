@@ -10,6 +10,11 @@ namespace Service
                     services.AddSingleton<FileData>();
                     services.AddHostedService<Core>();
                 })
+                .ConfigureLogging((context, logging) =>
+                {
+                    logging.AddConfiguration(
+                        context.Configuration.GetSection("Logging"));
+                })
                 .Build();
 
             host.Run();

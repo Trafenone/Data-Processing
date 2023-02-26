@@ -2,6 +2,6 @@
 {
     public interface IFileReader
     {
-        Task<List<InputTransaction>> ReadFileAsync();
+        Task<ReadingResult> ReadFileAsync();
     }
 }

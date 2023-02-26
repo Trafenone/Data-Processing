@@ -4,16 +4,20 @@
     {
         private readonly FileData _fileData;
         private readonly Watcher _watcher;
+        private readonly ILogger<Core> _logger;
 
-        public Core(FileData fileData)
+        public Core(FileData fileData, ILogger<Core> logger)
         {
             _fileData = fileData;
             _watcher = new(_fileData);
+            _logger = logger;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            Thread watchThread = new Thread(new ThreadStart(_watcher.Start));
+            _logger.LogInformation("The service is starting");
+
+            Thread watchThread = new(new ThreadStart(_watcher.Start));
             watchThread.Start();
 
             return base.StartAsync(cancellationToken);
@@ -21,6 +25,8 @@
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("The Service is stopping");
+
             _watcher.Stop();
 
             return base.StopAsync(cancellationToken);
@@ -32,15 +38,31 @@
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    Console.WriteLine("Прога працює");
+                    _logger.LogInformation("The Service is working");
 
-                    await Task.Delay(1000, stoppingToken);
+                    await Task.Delay(10000, stoppingToken);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("Помилка: " + e.Message);
+                _logger.LogError(e.Message);
             }
+        }
+
+        public static ILogger GetLogger(string categoryName)
+        {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+                    .AddConsole();
+            });
+
+            ILogger logger = loggerFactory.CreateLogger(categoryName);
+
+            return logger;
         }
     }
 }
