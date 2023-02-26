@@ -8,8 +8,10 @@ namespace Service
     {
         private readonly ConcurrentQueue<string> _queue;
         private readonly FileSystemWatcher _watcher;
+        private readonly FileLogger _fileLogger;
         private readonly SaveJson _saveService;
         private readonly FileData _fileData;
+        private readonly ILogger _logger;
         private bool _enabled = true;
 
 
@@ -20,6 +22,9 @@ namespace Service
             _watcher = new FileSystemWatcher(_fileData.PathA);
             _saveService = new SaveJson(_fileData);
             _watcher.Created += Watcher_Created;
+            _logger = Core.GetLogger("Watcher")!;
+            _fileLogger = new FileLogger(_fileData);
+            _fileLogger.BackUp();
         }
 
         public void Start()
@@ -31,8 +36,9 @@ namespace Service
                 {
                     _queue.TryDequeue(out _);
                     var reader = new FileProcessFactory().GetFileReader(new FileInfo(item));
-                    var inputData = await reader.ReadFileAsync();
-                    _saveService.Save(OutputTransaction.Transform(inputData));
+                    var readingResult = await reader!.ReadFileAsync();
+                    _fileLogger.SaveOneLog(readingResult);
+                    _saveService.Save(OutputTransaction.Transform(readingResult.Transactions));
                 });
             }
         }
@@ -45,7 +51,7 @@ namespace Service
 
         private void Watcher_Created(object sender, FileSystemEventArgs e)
         {
-            Console.WriteLine("З'явився новий файл. Шлях: " + e.FullPath);
+            _logger.LogInformation("New file detected. Path: " + e.FullPath);
 
             string extension = new FileInfo(e.FullPath).Extension;
 
