@@ -15,7 +15,7 @@ namespace Service
         private bool _enabled = true;
         private bool _isTime = true;
 
-        private TimeSpan _backupTime = new TimeSpan(23, 55, 0);
+        private TimeSpan _backupTime = new TimeSpan(23, 55, 30);
 
         public Watcher(FileData fileData)
         {

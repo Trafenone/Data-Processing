@@ -49,6 +49,17 @@
             }
         }
 
+        public async Task RestartAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("The Service is restarting");
+
+            await StopAsync(cancellationToken);
+
+            Thread.Sleep(5000);
+
+            await StartAsync(cancellationToken);
+        }
+
         public static ILogger GetLogger(string categoryName)
         {
             using var loggerFactory = LoggerFactory.Create(builder =>
