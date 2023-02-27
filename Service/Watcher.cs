@@ -13,8 +13,10 @@ namespace Service
         private readonly FileData _fileData;
         private readonly ILogger _logger;
         private bool _enabled = true;
+        private bool _isTime = true;
 
-
+        private TimeSpan _backupTime = new TimeSpan(23, 55, 0);
+        
         public Watcher(FileData fileData)
         {
             _fileData = fileData;
@@ -24,7 +26,6 @@ namespace Service
             _watcher.Created += Watcher_Created;
             _logger = Core.GetLogger("Watcher")!;
             _fileLogger = new FileLogger(_fileData);
-            _fileLogger.BackUp();
         }
 
         public void Start()
@@ -32,6 +33,16 @@ namespace Service
             _watcher.EnableRaisingEvents = true;
             while (_enabled)
             {
+                double now = DateTime.Now.TimeOfDay.TotalMilliseconds;
+
+                if (now >= _backupTime.TotalMilliseconds && _isTime
+                    && now <= _backupTime.TotalMilliseconds + 2)
+                {
+                    _fileLogger.BackUp();
+                    _isTime = false;
+                }
+                else _isTime = true;
+
                 Parallel.ForEach(_queue, async (item) =>
                 {
                     _queue.TryDequeue(out _);
