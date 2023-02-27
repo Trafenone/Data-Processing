@@ -1,5 +1,4 @@
 ﻿using Service.Models.Readers;
-using System.Text;
 
 namespace Service.Models
 {
@@ -61,7 +60,7 @@ namespace Service.Models
                 while ((line = reader.ReadLine()) != null)
                 {
                     parsedFiles++;
-                    
+
                     values = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
 
                     int errors = int.Parse(values[2]);
@@ -94,7 +93,7 @@ namespace Service.Models
             if (!File.Exists(pathFile))
                 File.Create(pathFile);
         }
-        
+
         private string GetPathBackup() => GetBackupDirectory() + "\\meta.log";
         private string GetBackupDirectory() => _fileData.PathC + "\\" + GetCurrentDirectory();
         private string GetCurrentFile() => _fileData.PathB + "\\" + GetCurrentDirectory() + "\\meta.log";
